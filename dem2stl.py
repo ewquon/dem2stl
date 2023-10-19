@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # vim: set fileencoding=utf-8 fileformat=unix :
 # -*- coding: utf-8 -*-
 # vim: set ts=8 et sw=4 sts=4 sta :
@@ -67,12 +67,12 @@ args = ap.parse_args()
 
 
 def fail(msg):
-    print >> sys.stderr, msg
+    print(msg, file=sys.stderr)
     exit(1)
 
 def verbose(msg):
     if args.verbose:
-        print >> sys.stderr, msg
+        print(msg, file=sys.stderr)
     return
 
 def ComputeUTMProj4defs (lon, lat):
@@ -181,7 +181,7 @@ class stlwriter():
 ## open dataset
 try:
     ds = gdal.Open(args.RASTER)
-except RuntimeError, e:
+except (RuntimeError, e):
     fail(str(e).strip())
 
 ## dataset coordinate system
@@ -223,9 +223,9 @@ if 1 == OSRds.IsProjected():
     P4xy = P4ds
     OSRxy = OSRds
     EPSGxy = EPSGds
-    print "Projected CS,  EPSG:%s" % EPSGxy
+    print("Projected CS,  EPSG:",EPSGxy)
 elif 1 == OSRds.IsGeographic():
-    print "Geographic CS, EPSG:%s" % EPSGds
+    print("Geographic CS, EPSG:",EPSGds)
     # i = np.arange(nx)
     # j = np.arange(ny) 
     i = np.array([0, nxm1])
@@ -241,12 +241,12 @@ elif 1 == OSRds.IsGeographic():
     if 0 == OSRxy.AutoIdentifyEPSG():
         EPSGxy = OSRxy.GetAuthorityCode(None)  # guess EPSG code
     x, y = pyproj.transform(P4ds, P4xy, lon, lat)
-    print "Projected CS,  EPSG:%s" % EPSGxy
+    print(f"Projected CS,  EPSG:",EPSGxy)
 else:
-    print "??  Error, cannot determine Coordinate Reference System"
-    print "??  Wkt string: " + ds.GetProjection()
-    print "??  Proj4 definitions: " + P4ds.srs
-    print "??  EPSG:%s" % EPSGds
+    print("??  Error, cannot determine Coordinate Reference System")
+    print("??  Wkt string: ",ds.GetProjection())
+    print("??  Proj4 definitions: ",P4ds.srs)
+    print("??  EPSG:",EPSGds)
     fail("Aborting")
 
 verbose("xmin, xmax = %g m, %g m" % (np.min(x), np.max(x)))
